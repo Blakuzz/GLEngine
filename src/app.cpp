@@ -21,10 +21,10 @@ std::string readFile(std::string path) {
 }
 
 int main(int argc, char** argv) {
-	
+
 	std::string vertexShaderCode = readFile("..\\engine\\glsl\\vertex.glsl");
 	std::string fragmentShaderCode = readFile("..\\engine\\glsl\\fragment.glsl");
-	
+
 	if (vertexShaderCode.size() == 0) {
 		std::cerr << "Vertex shader file is empty or path is wrong" << std::endl;
 		return 1;
@@ -41,17 +41,6 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	float vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		0.0f,  0.5f, 0.0f
-	};
-
-	unsigned int VBO;
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	
 	Shader vertexShader = Shader(vertexShaderCode);
 	Shader fragmentShader = Shader(fragmentShaderCode);
 
@@ -73,9 +62,36 @@ int main(int argc, char** argv) {
 	vertexShader.destroy();
 	fragmentShader.destroy();
 
+	float vertices[] = {
+		-0.5f, -0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f,
+		0.0f,  0.5f, 0.0f
+	};
+
+	unsigned int VBO, VAO;
+
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+
+	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindVertexArray(0);
+
 	while (!engine.windowsWasClosed()) {
 		engine.clearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		processUserInput(engine);
+
+		// in future change shader program
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
 		engine.swapBuffer();
 	}
 
