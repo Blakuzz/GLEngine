@@ -43,24 +43,8 @@ bool Engine::init() {
 	return true;
 }
 
-bool Engine::setShaderProgram(Shader vertexShader, Shader fragmentShader) {
-	this->shaderProgram = glCreateProgram();
-	glAttachShader(this->shaderProgram, vertexShader.getGLId());
-	glAttachShader(this->shaderProgram, fragmentShader.getGLId());
-	glLinkProgram(this->shaderProgram);
-	
-	int success;
-	char infoLog[512];
-	glGetProgramiv(this->shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(this->shaderProgram, 512, NULL, infoLog);
-		std::cerr << "Error during shader program linking\n" << infoLog << std::endl;
-		return false;
-	}
-
-	glUseProgram(this->shaderProgram);
-
-	return true;
+void Engine::setShaderProgram(ShaderProgram shaderProgram) {
+	glUseProgram(shaderProgram.getGLId());
 }
 
 

@@ -2,15 +2,14 @@
 
 #include <iostream>
 
-Shader::Shader(std::string code)
+Shader::Shader(std::string code, unsigned int shaderType)
 {
 	this->code = code;
+	this->glId = glCreateShader(shaderType);
+	this->type = shaderType;
 }
 
-bool Shader::compile(unsigned int shaderType) {
-
-	this->glId = glCreateShader(shaderType);
-	this->type = shaderType; 
+bool Shader::compile() {
 
 	const char *vertex_file_c_str = this->code.c_str();
 	glShaderSource(this->glId, 1, &vertex_file_c_str, NULL);

@@ -41,23 +41,23 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	Shader vertexShader = Shader(vertexShaderCode);
-	Shader fragmentShader = Shader(fragmentShaderCode);
+	Shader vertexShader = Shader(vertexShaderCode, Shader::VERTEX_SHADER);
+	Shader fragmentShader = Shader(fragmentShaderCode, Shader::FRAGMENT_SHADER);
 
-	if (!vertexShader.compile(Shader::VERTEX_SHADER)) {
+	if (!vertexShader.compile()) {
 		engine.terminate();
 		return 1;
 	}
 	
-	if (!fragmentShader.compile(Shader::FRAGMENT_SHADER)) {
+	if (!fragmentShader.compile()) {
 		engine.terminate();
 		return 1;
 	}
 
-	if (!engine.setShaderProgram(vertexShader, fragmentShader)) {
-		engine.terminate();
-		return 1;
-	}
+	ShaderProgram shaderProgram = ShaderProgram();
+	shaderProgram.link(vertexShader, fragmentShader);
+
+	engine.setShaderProgram(shaderProgram);
 
 	vertexShader.destroy();
 	fragmentShader.destroy();
@@ -110,6 +110,7 @@ int main(int argc, char** argv) {
 		engine.swapBuffer();
 	}
 
+	shaderProgram.destroy();
 	engine.terminate();
 	return 0;
 }

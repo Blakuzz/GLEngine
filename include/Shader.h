@@ -6,8 +6,8 @@
 class Shader
 {
 public:
-	Shader(std::string code);
-	bool compile(unsigned int shaderType);
+	Shader(std::string code, unsigned int shaderType);
+	bool compile();
 	unsigned int getGLId();
 	// delete shader with glId from opengl context;
 	void destroy();
