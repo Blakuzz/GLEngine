@@ -1,5 +1,6 @@
 #include "Engine.h"
 #include "Shader.h"
+#include "Texture.h"
 
 #include <string>
 #include <fstream>
@@ -92,38 +93,28 @@ int main(int argc, char** argv) {
 	unsigned char *data = stbi_load("..\\engine\\resources\\textures\\wall.jpg", &width, &height, &nrChannels, 0);
 
 	if (data == NULL) {
-		std::cerr << "Texture file is invalid or not found" << std::endl;
+		std::cerr << "Image file is invalid or not found" << std::endl;
 		return 1;
 	}
 
-	std::cout << nrChannels << std::endl;
+	Texture texture = Texture();
+	texture.load(data, width, height, nrChannels);
 
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	
-	glBindTexture(GL_TEXTURE_2D, texture);
-	// sto configurando l'oggetto assegnato al target gl_texture_2d
-	// sto settando solo il primo livello per le mipmap
-	// come deve salvare la texture OpenGL
-	// dimensioni dell'immagine
-	// sempre 0
-	// formato e tipo di dato dell'immagine d'origine
-	// dati
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-	// ora ho la texture bindata all'oggetto, e dico di generare le mipmap (finora avevo settato solo il livello 0)
-	glGenerateMipmap(GL_TEXTURE_2D);
 	stbi_image_free(data);
 
 	while (!engine.windowsWasClosed()) {
 		engine.clearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		processUserInput(engine);
 
-		glBindTexture(GL_TEXTURE_2D, texture);
+		glActiveTexture(GL_TEXTURE0); // nel caso vogliamo usare più texture col sampler
+		texture.bind();
 		engine.render(mesh);
+		texture.unbind();
 
 		engine.swapBuffer();
 	}
 
+	texture.destroy();
 	mesh.destroy();
 	shaderProgram.destroy();
 	engine.terminate();
