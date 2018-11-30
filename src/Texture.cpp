@@ -2,15 +2,15 @@
 
 #include "GlStuff.h"
 
-Texture::Texture(std::vector<unsigned char>& data, int width, int height, int channelsCount)
+#include <iostream>
+Texture::Texture(int width, int height, int channelsCount)
 {
-	this->data = data;
 	this->width = width;
 	this->height = height;
 	this->channelsCount = channelsCount;
 }
 
-bool Texture::load() {
+bool Texture::load(std::vector<unsigned char>& data) {
 
 	if (this->textureId > 0) {
 		return false;

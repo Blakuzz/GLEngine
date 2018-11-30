@@ -90,8 +90,8 @@ int main(int argc, char** argv) {
 		0.5f, 1.0f
 	};
 
-	Mesh mesh = Mesh(vertices, indices, colors, textureCoordinates);
-	if (!mesh.load()) {
+	Mesh mesh = Mesh();
+	if (!mesh.load(vertices, indices, colors, textureCoordinates)) {
 		std::cerr << "Error during mesh load" << std::endl;
 		return 1;
 	}
@@ -104,14 +104,15 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	Texture texture = Texture(std::vector<unsigned char>(data, data + width * height * nrChannels), width, height, nrChannels);
+	Texture texture = Texture(width, height, nrChannels);
 	
-	if (!texture.load()) {
+	if (!texture.load(std::vector<unsigned char>(data, data + width * height * nrChannels))) {
+		stbi_image_free(data);
 		std::cerr << "Error during texture load" << std::endl;
 		return 1;
 	}
 
-	stbi_image_free(data);
+	
 
 	while (!engine.windowsWasClosed()) {
 		engine.clearColor(0.2f, 0.3f, 0.3f, 1.0f);

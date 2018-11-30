@@ -48,9 +48,7 @@ void Engine::setShaderProgram(ShaderProgram shaderProgram) {
 }
 
 void Engine::render(Mesh& mesh) {
-	glBindVertexArray(mesh.getVAOId());
-	glDrawElements(GL_TRIANGLES, mesh.getVerticesCount(), GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
+	mesh.render();
 }
 
 void Engine::clearColor(float red, float green, float blue, float alpha) {

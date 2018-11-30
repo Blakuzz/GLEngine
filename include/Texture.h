@@ -5,14 +5,13 @@
 class Texture
 {
 public:
-	Texture(std::vector<unsigned char>& data, int width, int height, int channelsCount);
-	bool load();
+	Texture(int width, int height, int channelsCount);
+	bool load(std::vector<unsigned char>& data);
 	void bind();
 	void unbind();
 	void destroy();
 	~Texture();
 private:
-	std::vector<unsigned char> data;
 	int width = 0;
 	int height = 0;
 	int channelsCount = 0;
