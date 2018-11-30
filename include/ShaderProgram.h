@@ -11,6 +11,6 @@ public:
 	void destroy();
 	~ShaderProgram();
 private:
-	unsigned int glId;
+	unsigned int glId = 0;
 };
 

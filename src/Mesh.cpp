@@ -8,6 +8,13 @@ Mesh::Mesh(std::vector<float>& vertices, std::vector<unsigned int>& indices, std
 	this->indices = indices;
 	this->colors = colors;
 	this->textureCoordinates = textureCoordinates;
+}
+
+bool Mesh::load() {
+
+	if (this->VAOId > 0) {
+		return false;
+	}
 
 	glGenVertexArrays(1, &this->VAOId);
 	glGenBuffers(1, &this->verticesVBOId);
@@ -24,17 +31,17 @@ Mesh::Mesh(std::vector<float>& vertices, std::vector<unsigned int>& indices, std
 	// vertices
 	glBindBuffer(GL_ARRAY_BUFFER, this->verticesVBOId);
 	glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(float), this->vertices.data(), GL_STATIC_DRAW);
-		
+
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	
+
 	// colors
 	glBindBuffer(GL_ARRAY_BUFFER, this->colorsVBOId);
 	glBufferData(GL_ARRAY_BUFFER, this->colors.size() * sizeof(float), this->colors.data(), GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	
+
 	// texture coordinates
 	glBindBuffer(GL_ARRAY_BUFFER, this->textureCoordinatesVBOId);
 	glBufferData(GL_ARRAY_BUFFER, this->textureCoordinates.size() * sizeof(float), this->textureCoordinates.data(), GL_STATIC_DRAW);
@@ -47,6 +54,7 @@ Mesh::Mesh(std::vector<float>& vertices, std::vector<unsigned int>& indices, std
 	glBindVertexArray(0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+	return true;
 }
 
 unsigned int Mesh::getVAOId() {

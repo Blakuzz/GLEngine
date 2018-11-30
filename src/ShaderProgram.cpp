@@ -3,12 +3,15 @@
 #include "GlStuff.h"
 #include <iostream>
 
-ShaderProgram::ShaderProgram()
-{
-	this->glId = glCreateProgram();
-}
+ShaderProgram::ShaderProgram(){}
 
 bool ShaderProgram::link(Shader vertexShader, Shader fragmentShader) {
+	
+	if (this->glId > 0) {
+		return false;
+	}
+
+	this->glId = glCreateProgram();
 	glAttachShader(this->glId, vertexShader.getGLId());
 	glAttachShader(this->glId, fragmentShader.getGLId());
 	glLinkProgram(this->glId);

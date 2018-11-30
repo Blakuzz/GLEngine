@@ -5,12 +5,16 @@
 Shader::Shader(std::string code, unsigned int shaderType)
 {
 	this->code = code;
-	this->glId = glCreateShader(shaderType);
 	this->type = shaderType;
 }
 
 bool Shader::compile() {
 
+	if (this->glId > 0) {
+		return false;
+	}
+
+	this->glId = glCreateShader(this->type);
 	const char *vertex_file_c_str = this->code.c_str();
 	glShaderSource(this->glId, 1, &vertex_file_c_str, NULL);
 	glCompileShader(this->glId);
@@ -24,6 +28,7 @@ bool Shader::compile() {
 		std::cerr << "Error during shader compilation\n" << infoLog << std::endl;
 		return false;
 	}
+
 	return true;
 }
 

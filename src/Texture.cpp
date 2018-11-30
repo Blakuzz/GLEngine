@@ -2,17 +2,27 @@
 
 #include "GlStuff.h"
 
-Texture::Texture()
+Texture::Texture(std::vector<unsigned char>& data, int width, int height, int channelsCount)
 {
-	glGenTextures(1, &this->textureId);
-
+	this->data = data;
+	this->width = width;
+	this->height = height;
+	this->channelsCount = channelsCount;
 }
 
-void Texture::load(unsigned char* data, int width, int height, int channelsCount) {
-	glBindTexture(GL_TEXTURE_2D, textureId);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+bool Texture::load() {
+
+	if (this->textureId > 0) {
+		return false;
+	}
+
+	glGenTextures(1, &this->textureId);
+	glBindTexture(GL_TEXTURE_2D, this->textureId);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->width, this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data());
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	return true;
 }
 
 void Texture::bind() {

@@ -61,7 +61,10 @@ int main(int argc, char** argv) {
 	}
 
 	ShaderProgram shaderProgram = ShaderProgram();
-	shaderProgram.link(vertexShader, fragmentShader);
+	if (!shaderProgram.link(vertexShader, fragmentShader)) {
+		std::cerr << "Shader program can not be linked" << std::endl;
+		return 1;
+	}
 
 	engine.setShaderProgram(shaderProgram);
 
@@ -88,6 +91,10 @@ int main(int argc, char** argv) {
 	};
 
 	Mesh mesh = Mesh(vertices, indices, colors, textureCoordinates);
+	if (!mesh.load()) {
+		std::cerr << "Error during mesh load" << std::endl;
+		return 1;
+	}
 
 	int width, height, nrChannels;
 	unsigned char *data = stbi_load("..\\engine\\resources\\textures\\wall.jpg", &width, &height, &nrChannels, 0);
@@ -97,8 +104,12 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	Texture texture = Texture();
-	texture.load(data, width, height, nrChannels);
+	Texture texture = Texture(std::vector<unsigned char>(data, data + width * height * nrChannels), width, height, nrChannels);
+	
+	if (!texture.load()) {
+		std::cerr << "Error during texture load" << std::endl;
+		return 1;
+	}
 
 	stbi_image_free(data);
 
