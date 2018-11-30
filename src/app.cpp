@@ -6,6 +6,9 @@
 #include <iostream>
 #include <vector>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 // glfw now debug lib!
 
 void processUserInput(Engine& engine) {
@@ -21,6 +24,8 @@ std::string readFile(std::string path) {
 	return content;
 }
 
+
+
 int main(int argc, char** argv) {
 
 	std::string vertexShaderCode = readFile("..\\engine\\glsl\\vertex.glsl");
@@ -35,7 +40,6 @@ int main(int argc, char** argv) {
 		std::cerr << "Fragment shader file is empty or path is wrong" << std::endl;
 		return 1;
 	}
-	
 
 	Engine engine = Engine(1024, 768);
 	if (!engine.init()) {
@@ -64,28 +68,57 @@ int main(int argc, char** argv) {
 	fragmentShader.destroy();
 
 	std::vector<float> vertices = {
-		0.5f,  0.5f, 0.0f,  // top right
-		0.5f, -0.5f, 0.0f,  // bottom right
-		-0.5f, -0.5f, 0.0f,  // bottom left
-		-0.5f,  0.5f, 0.0f   // top left 
+		-0.5f,  -0.5f, 0.0f,  // left bottom
+		0.5f, -0.5f, 0.0f,  // right bottom
+		0.0f, 0.5f, 0.0f,  // central top
 	};
 	std::vector<unsigned int> indices = {  // note that we start from 0!
-		0, 1, 3,   // first triangle
-		1, 2, 3    // second triangle
+		0, 1, 2   // first triangle
 	};
 	std::vector<float> colors = {
 		1.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 0.0f,
 		0.0f, 0.0f, 1.0f,
-		0.0f, 1.0f, 1.0f
+	};
+	std::vector<float> textureCoordinates = {
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		0.5f, 1.0f
 	};
 
-	Mesh mesh = Mesh(vertices, indices, colors);
+	Mesh mesh = Mesh(vertices, indices, colors, textureCoordinates);
+
+	int width, height, nrChannels;
+	unsigned char *data = stbi_load("..\\engine\\resources\\textures\\wall.jpg", &width, &height, &nrChannels, 0);
+
+	if (data == NULL) {
+		std::cerr << "Texture file is invalid or not found" << std::endl;
+		return 1;
+	}
+
+	std::cout << nrChannels << std::endl;
+
+	unsigned int texture;
+	glGenTextures(1, &texture);
 	
+	glBindTexture(GL_TEXTURE_2D, texture);
+	// sto configurando l'oggetto assegnato al target gl_texture_2d
+	// sto settando solo il primo livello per le mipmap
+	// come deve salvare la texture OpenGL
+	// dimensioni dell'immagine
+	// sempre 0
+	// formato e tipo di dato dell'immagine d'origine
+	// dati
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	// ora ho la texture bindata all'oggetto, e dico di generare le mipmap (finora avevo settato solo il livello 0)
+	glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(data);
+
 	while (!engine.windowsWasClosed()) {
 		engine.clearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		processUserInput(engine);
 
+		glBindTexture(GL_TEXTURE_2D, texture);
 		engine.render(mesh);
 
 		engine.swapBuffer();

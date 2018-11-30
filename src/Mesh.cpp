@@ -2,15 +2,17 @@
 
 #include "GlStuff.h"
 
-Mesh::Mesh(std::vector<float>& vertices, std::vector<unsigned int>& indices, std::vector<float>& colors)
+Mesh::Mesh(std::vector<float>& vertices, std::vector<unsigned int>& indices, std::vector<float>& colors, std::vector<float>& textureCoordinates)
 {
 	this->vertices = vertices;
 	this->indices = indices;
 	this->colors = colors;
+	this->textureCoordinates = textureCoordinates;
 
 	glGenVertexArrays(1, &this->VAOId);
 	glGenBuffers(1, &this->verticesVBOId);
 	glGenBuffers(1, &this->colorsVBOId);
+	glGenBuffers(1, &this->textureCoordinatesVBOId);
 	glGenBuffers(1, &this->EBOId);
 
 	glBindVertexArray(this->VAOId);
@@ -33,6 +35,13 @@ Mesh::Mesh(std::vector<float>& vertices, std::vector<unsigned int>& indices, std
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	
+	// texture coordinates
+	glBindBuffer(GL_ARRAY_BUFFER, this->textureCoordinatesVBOId);
+	glBufferData(GL_ARRAY_BUFFER, this->textureCoordinates.size() * sizeof(float), this->textureCoordinates.data(), GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+
 	// unbind
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
