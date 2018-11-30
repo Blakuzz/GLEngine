@@ -16,9 +16,21 @@ bool Texture::load(std::vector<unsigned char>& data) {
 		return false;
 	}
 
+	unsigned int sourceFormat;
+	if (channelsCount == 3) {
+		sourceFormat = GL_RGB;
+	}
+	else if (channelsCount == 4) {
+		sourceFormat = GL_RGBA;
+	}
+	else {
+		std::cout << "Unknown number of channels" << std::endl;
+		return false;
+	}
+
 	glGenTextures(1, &this->textureId);
 	glBindTexture(GL_TEXTURE_2D, this->textureId);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->width, this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data());
+	glTexImage2D(GL_TEXTURE_2D, 0, sourceFormat, this->width, this->height, 0, sourceFormat, GL_UNSIGNED_BYTE, data.data());
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 

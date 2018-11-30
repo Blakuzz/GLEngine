@@ -25,6 +25,30 @@ std::string readFile(std::string path) {
 	return content;
 }
 
+Texture loadTexture(std::string path, bool flip_vertically) {
+
+	stbi_set_flip_vertically_on_load(flip_vertically);
+	
+	int width, height, nrChannels;
+	unsigned char *data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
+	
+	if (data == NULL) {
+		stbi_image_free(data);
+		std::cerr << "Image file is invalid or not found" << std::endl;
+		//throw 1;
+	}
+
+	Texture texture = Texture(width, height, nrChannels);
+	if (!texture.load(std::vector<unsigned char>(data, data + width * height * nrChannels))) {
+		stbi_image_free(data);
+		std::cerr << "Error during texture load" << std::endl;
+		//throw 1;
+	}
+
+	stbi_image_free(data);
+
+	return texture;
+}
 
 
 int main(int argc, char** argv) {
@@ -96,37 +120,28 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	int width, height, nrChannels;
-	unsigned char *data = stbi_load("..\\engine\\resources\\textures\\wall.jpg", &width, &height, &nrChannels, 0);
+	Texture texture0 = loadTexture("..\\engine\\resources\\textures\\wall.jpg", false);
+	Texture texture1 = loadTexture("..\\engine\\resources\\textures\\awesomeface.png", true);
 
-	if (data == NULL) {
-		std::cerr << "Image file is invalid or not found" << std::endl;
-		return 1;
-	}
+	mesh.addTexture(0, texture0);
+	mesh.addTexture(1, texture1);
 
-	Texture texture = Texture(width, height, nrChannels);
-	
-	if (!texture.load(std::vector<unsigned char>(data, data + width * height * nrChannels))) {
-		stbi_image_free(data);
-		std::cerr << "Error during texture load" << std::endl;
-		return 1;
-	}
-
-	
+	// TODO refactor -> (after set current program shader)
+	glUniform1i(glGetUniformLocation(shaderProgram.getGLId(), "texture0"), 0);
+	glUniform1i(glGetUniformLocation(shaderProgram.getGLId(), "texture1"), 1);
 
 	while (!engine.windowsWasClosed()) {
 		engine.clearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		processUserInput(engine);
 
-		glActiveTexture(GL_TEXTURE0); // nel caso vogliamo usare più texture col sampler
-		texture.bind();
-		engine.render(mesh);
-		texture.unbind();
 
+		engine.render(mesh);
+		
 		engine.swapBuffer();
 	}
 
-	texture.destroy();
+	texture0.destroy();
+	texture1.destroy();
 	mesh.destroy();
 	shaderProgram.destroy();
 	engine.terminate();

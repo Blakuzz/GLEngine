@@ -22,7 +22,7 @@ private:
 	unsigned int EBOId = 0;
 	unsigned int VAOId = 0;
 
-	std::unordered_map<unsigned int, Texture&> textures;
+	std::unordered_map<unsigned int, Texture> textures;
 
 };
 

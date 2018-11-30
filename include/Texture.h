@@ -8,7 +8,7 @@ public:
 	Texture(int width, int height, int channelsCount);
 	bool load(std::vector<unsigned char>& data);
 	void bind();
-	void unbind();
+	static void unbind();
 	void destroy();
 	~Texture();
 private:

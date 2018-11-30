@@ -58,9 +58,20 @@ void Mesh::addTexture(unsigned int id, Texture texture) {
 }
 
 void Mesh::render() {
+
+	for (std::pair<unsigned int, Texture> tex : this->textures)
+	{
+		unsigned int glTextureUnit = tex.first;
+		Texture texture = tex.second;
+		glActiveTexture(GL_TEXTURE0 + glTextureUnit); // nel caso vogliamo usare più texture col sampler
+		texture.bind();
+	}
+
 	glBindVertexArray(this->VAOId);
 	glDrawElements(GL_TRIANGLES, this->verticesCount, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
+
+	Texture::unbind();
 }
 
 void Mesh::destroy() {
