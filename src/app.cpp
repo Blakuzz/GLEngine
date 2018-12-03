@@ -90,31 +90,33 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	engine.setShaderProgram(shaderProgram);
-
 	vertexShader.destroy();
 	fragmentShader.destroy();
 
 	std::vector<float> vertices = {
-		-0.5f,  -0.5f, 0.0f,  // left bottom
-		0.5f, -0.5f, 0.0f,  // right bottom
-		0.0f, 0.5f, 0.0f,  // central top
+		-0.5f,  -0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f, 
+		-0.5f, 0.5f, 0.0f,
+		0.5f, 0.5, 0.0
 	};
-	std::vector<unsigned int> indices = {  // note that we start from 0!
-		0, 1, 2   // first triangle
+	std::vector<unsigned int> indices = {
+		0, 1, 2,
+		2, 1, 3
 	};
 	std::vector<float> colors = {
 		1.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 0.0f,
 		0.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 1.0f,
 	};
 	std::vector<float> textureCoordinates = {
 		0.0f, 0.0f,
 		1.0f, 0.0f,
-		0.5f, 1.0f
+		0.0f, 1.0f,
+		1.0f, 1.0f
 	};
 
-	Mesh mesh = Mesh();
+	Mesh mesh = Mesh(shaderProgram);
 	if (!mesh.load(vertices, indices, colors, textureCoordinates)) {
 		std::cerr << "Error during mesh load" << std::endl;
 		return 1;
@@ -126,17 +128,63 @@ int main(int argc, char** argv) {
 	mesh.addTexture(0, texture0);
 	mesh.addTexture(1, texture1);
 
-	// TODO refactor -> (after set current program shader)
-	glUniform1i(glGetUniformLocation(shaderProgram.getGLId(), "texture0"), 0);
-	glUniform1i(glGetUniformLocation(shaderProgram.getGLId(), "texture1"), 1);
+	float angle = 0;
+	float angleInc = 0.1;
+	glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0);
+	glm::vec3 scaleInc = glm::vec3(1.001, 1.001, 1.001);
+	glm::vec3 translation = glm::vec3(0.0, 0.0, 0.0);
+	glm::vec3 translationInc = glm::vec3(0.001,0.001,0.001);
+	int times = 0;
 
 	while (!engine.windowsWasClosed()) {
 		engine.clearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		processUserInput(engine);
 
+		if (times < 3) {
+			if (angle < 0 || angle > 90) {
+				angleInc = -angleInc;
+				times++;
+			}
+			angle += angleInc;
+			mesh.rotate(glm::vec3(0.0f, 0.0f, 1.0f), angleInc);
+		}
+
+		else if (times == 3) {
+			if (scale.x > 1.5) {
+				times++;
+			}
+			scale = scale * scaleInc;
+			mesh.scale(scaleInc);
+		}
+
+		else if (times < 7) {
+			if (translation.x < 0 || translation.x > 0.5) {
+				translationInc.x = -translationInc.x;
+				translationInc.y = -translationInc.y;
+				translationInc.z = -translationInc.z;
+				times++;
+			}
+			translation = translation + translationInc;
+			mesh.translate(translationInc);
+		}
+		else if (times < 1000) {
+			times++;
+		}
+		else if (times < 2000) {
+			mesh.resetRotation();
+			times++;
+		}
+		else if (times < 3000) {
+			mesh.setScale(glm::vec3(1.0f));
+			times++;
+		}
+		else if (times < 4000) {
+			mesh.setTranslation(glm::vec3(0.0f));
+			times++;
+		}
 
 		engine.render(mesh);
-		
+
 		engine.swapBuffer();
 	}
 
@@ -145,5 +193,6 @@ int main(int argc, char** argv) {
 	mesh.destroy();
 	shaderProgram.destroy();
 	engine.terminate();
+
 	return 0;
 }

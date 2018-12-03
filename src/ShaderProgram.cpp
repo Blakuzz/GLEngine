@@ -30,8 +30,20 @@ bool ShaderProgram::link(Shader vertexShader, Shader fragmentShader) {
 	return true;
 }
 
-unsigned int ShaderProgram::getGLId() {
-	return this->glId;
+void ShaderProgram::bind() {
+	glUseProgram(this->glId);
+}
+
+void ShaderProgram::unbind() {
+	glUseProgram(0);
+}
+
+void ShaderProgram::setMatrix4(const std::string &name, const glm::mat4 &matrix) {
+	glUniformMatrix4fv(glGetUniformLocation(this->glId, name.c_str()), 1, GL_FALSE, &matrix[0][0]);
+}
+
+void ShaderProgram::setInteger(const std::string &name, int value) {
+	glUniform1i(glGetUniformLocation(this->glId, name.c_str()), value);
 }
 
 void ShaderProgram::destroy() {

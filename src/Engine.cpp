@@ -43,10 +43,6 @@ bool Engine::init() {
 	return true;
 }
 
-void Engine::setShaderProgram(ShaderProgram shaderProgram) {
-	glUseProgram(shaderProgram.getGLId());
-}
-
 void Engine::render(Mesh& mesh) {
 	mesh.render();
 }

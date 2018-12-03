@@ -1,8 +1,12 @@
 #include "Mesh.h"
 
+#include <array>
+#include <unordered_map>
 #include "GlStuff.h"
 
-Mesh::Mesh(){}
+Mesh::Mesh(ShaderProgram shaderProgram){
+	this->shaderProgram = shaderProgram;
+}
 
 bool Mesh::load(std::vector<float>& vertices, std::vector<unsigned int>& indices, std::vector<float>& colors, std::vector<float>& textureCoordinates) {
 
@@ -53,17 +57,51 @@ bool Mesh::load(std::vector<float>& vertices, std::vector<unsigned int>& indices
 	return true;
 }
 
+void Mesh::scale(glm::vec3& scaling) {
+	this->scaling *= scaling;
+}
+
+void Mesh::rotate(glm::vec3& axis, float degrees) {
+	this->rotation = glm::rotate(this->rotation, glm::radians(degrees), axis);
+}
+
+void Mesh::translate(glm::vec3& translation) {
+	this->translation += translation;
+}
+
+void Mesh::setScale(glm::vec3& scaling) {
+	this->scaling = scaling;
+}
+
+void Mesh::setTranslation(glm::vec3& translation) {
+	this->translation = translation;
+}
+
+void Mesh::resetRotation() {
+	this->rotation = glm::mat4(1);
+}
+
 void Mesh::addTexture(unsigned int id, Texture texture) {
 	this->textures.insert({ id, texture });
 }
 
+std::array<std::string, 8> shaderLabels = { "texture0","texture1", "texture2", "texture3", "texture4", "texture5", "texture6", "texture7" };
+
 void Mesh::render() {
+	
+	this->shaderProgram.bind();
+
+	glm::mat4 transformation = glm::scale(glm::mat4(1), this->scaling);
+	transformation = this->rotation * transformation;
+	transformation = glm::translate(transformation, this->translation);
+
+	this->shaderProgram.setMatrix4("transformation", transformation);
 
 	for (std::pair<unsigned int, Texture> tex : this->textures)
 	{
-		unsigned int glTextureUnit = tex.first;
+		this->shaderProgram.setInteger(shaderLabels[tex.first], tex.first);
 		Texture texture = tex.second;
-		glActiveTexture(GL_TEXTURE0 + glTextureUnit); // nel caso vogliamo usare più texture col sampler
+		glActiveTexture(GL_TEXTURE0 + tex.first); // nel caso vogliamo usare più texture col sampler
 		texture.bind();
 	}
 
@@ -72,6 +110,7 @@ void Mesh::render() {
 	glBindVertexArray(0);
 
 	Texture::unbind();
+	ShaderProgram::unbind();
 }
 
 void Mesh::destroy() {
