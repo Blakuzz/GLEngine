@@ -87,7 +87,7 @@ void Mesh::addTexture(unsigned int id, Texture texture) {
 
 std::array<std::string, 8> shaderLabels = { "texture0","texture1", "texture2", "texture3", "texture4", "texture5", "texture6", "texture7" };
 
-void Mesh::render() {
+void Mesh::render(Camera& camera) {
 	
 	this->shaderProgram.bind();
 
@@ -95,7 +95,11 @@ void Mesh::render() {
 	transformation = this->rotation * transformation;
 	transformation = glm::translate(transformation, this->translation);
 
-	this->shaderProgram.setMatrix4("transformation", transformation);
+	// miss view (inverse camera)
+
+	glm::mat4 projection = camera.getProjection();
+
+	this->shaderProgram.setMatrix4("transformation", projection * transformation);
 
 	for (std::pair<unsigned int, Texture> tex : this->textures)
 	{

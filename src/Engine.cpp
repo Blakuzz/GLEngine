@@ -43,8 +43,8 @@ bool Engine::init() {
 	return true;
 }
 
-void Engine::render(Mesh& mesh) {
-	mesh.render();
+void Engine::render(Camera& camera, Mesh& mesh) {
+	mesh.render(camera);
 }
 
 void Engine::clearColor(float red, float green, float blue, float alpha) {

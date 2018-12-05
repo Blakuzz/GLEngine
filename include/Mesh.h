@@ -3,6 +3,7 @@
 #include "GlStuff.h"
 #include "Texture.h"
 #include "ShaderProgram.h"
+#include "Camera.h"
 
 #include <vector>
 #include <unordered_map>
@@ -19,7 +20,7 @@ public:
 	void setTranslation(glm::vec3& translation);
 	void resetRotation();
 	void addTexture(unsigned int id, Texture texture);
-	void render();
+	void render(Camera& camera);
 	void destroy();
 	~Mesh();
 private:

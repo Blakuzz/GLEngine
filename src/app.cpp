@@ -66,7 +66,10 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	Engine engine = Engine(1024, 768);
+	int width = 1024;
+	int height = 768;
+
+	Engine engine = Engine(width, height);
 	if (!engine.init()) {
 		return 1;
 	}
@@ -94,10 +97,10 @@ int main(int argc, char** argv) {
 	fragmentShader.destroy();
 
 	std::vector<float> vertices = {
-		-0.5f,  -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f, 
-		-0.5f, 0.5f, 0.0f,
-		0.5f, 0.5, 0.0
+		-0.5f,  -0.5f, -2.0f,
+		0.5f, -0.5f, -2.0f, 
+		-0.5f, 0.5f, -2.0f,
+		0.5f, 0.5f, -2.0f
 	};
 	std::vector<unsigned int> indices = {
 		0, 1, 2,
@@ -128,12 +131,14 @@ int main(int argc, char** argv) {
 	mesh.addTexture(0, texture0);
 	mesh.addTexture(1, texture1);
 
+	Camera camera = Camera(glm::perspective(glm::radians(45.0f), width / float(height), 0.1f, 100.0f));
+
 	float angle = 0;
 	float angleInc = 0.1;
 	glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0);
 	glm::vec3 scaleInc = glm::vec3(1.001, 1.001, 1.001);
 	glm::vec3 translation = glm::vec3(0.0, 0.0, 0.0);
-	glm::vec3 translationInc = glm::vec3(0.001,0.001,0.001);
+	glm::vec3 translationInc = glm::vec3(0.001, 0.001, 0);
 	int times = 0;
 
 	while (!engine.windowsWasClosed()) {
@@ -183,7 +188,7 @@ int main(int argc, char** argv) {
 			times++;
 		}
 
-		engine.render(mesh);
+		engine.render(camera, mesh);
 
 		engine.swapBuffer();
 	}
