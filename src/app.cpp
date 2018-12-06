@@ -97,10 +97,10 @@ int main(int argc, char** argv) {
 	fragmentShader.destroy();
 
 	std::vector<float> vertices = {
-		-0.5f,  -0.5f, -2.0f,
-		0.5f, -0.5f, -2.0f, 
-		-0.5f, 0.5f, -2.0f,
-		0.5f, 0.5f, -2.0f
+		-0.5f,  -0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f, 
+		-0.5f, 0.5f, 0.0f,
+		0.5f, 0.5f, 0.0f
 	};
 	std::vector<unsigned int> indices = {
 		0, 1, 2,
@@ -133,6 +133,7 @@ int main(int argc, char** argv) {
 
 	Camera camera = Camera(glm::perspective(glm::radians(45.0f), width / float(height), 0.1f, 100.0f));
 
+	mesh.translate(glm::vec3(0.0f, 0.0f, -2.5f));
 	float angle = 0;
 	float angleInc = 0.1;
 	glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0);
@@ -151,7 +152,7 @@ int main(int argc, char** argv) {
 				times++;
 			}
 			angle += angleInc;
-			mesh.rotate(glm::vec3(0.0f, 0.0f, 1.0f), angleInc);
+			mesh.rotate(glm::vec3(0.0f, 1.0f, 0.0f), angleInc);
 		}
 
 		else if (times == 3) {

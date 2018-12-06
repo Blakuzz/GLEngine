@@ -91,9 +91,9 @@ void Mesh::render(Camera& camera) {
 	
 	this->shaderProgram.bind();
 
-	glm::mat4 transformation = glm::scale(glm::mat4(1), this->scaling);
-	transformation = this->rotation * transformation;
-	transformation = glm::translate(transformation, this->translation);
+	glm::mat4 scale = glm::scale(glm::mat4(1), this->scaling);
+	glm::mat4 translate = glm::translate(glm::mat4(1), this->translation);
+	glm::mat4 transformation = translate * this->rotation * scale;
 
 	// miss view (inverse camera)
 
