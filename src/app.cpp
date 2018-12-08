@@ -18,6 +18,32 @@ void processUserInput(Engine& engine) {
 	}
 }
 
+void updateCamera(Engine& engine, Camera& camera, float elapsedTime) {
+	float speed = 2.5f;
+	float movement = speed * elapsedTime;
+	glm::vec3 position = camera.getPosition();
+	glm::vec3 target = camera.getDirection();
+	glm::vec3 up = camera.getUp();
+	if (engine.eventHappened(GLFW_KEY_W, GLFW_PRESS))
+		camera.setPosition(position + movement * target);
+	if (engine.eventHappened(GLFW_KEY_S, GLFW_PRESS))
+		camera.setPosition(position - movement * target);
+	if (engine.eventHappened(GLFW_KEY_A, GLFW_PRESS))
+		camera.setPosition(position - movement * glm::normalize(glm::cross(target, up)));	
+	if (engine.eventHappened(GLFW_KEY_D, GLFW_PRESS))
+		camera.setPosition(position + movement * glm::normalize(glm::cross(target, up)));
+
+	float yaw = Engine::yaw;
+	float pitch = Engine::pitch;
+
+	camera.setDirection(glm::normalize(glm::vec3(
+		cos(glm::radians(pitch)) * sin(glm::radians(yaw)),
+		- sin(glm::radians(pitch)),
+		- cos(glm::radians(pitch)) * cos(glm::radians(yaw))
+		)));
+
+}
+
 std::string readFile(std::string path) {
 	std::ifstream ifs(path);
 	std::string content((std::istreambuf_iterator<char>(ifs)),
@@ -119,8 +145,6 @@ int main(int argc, char** argv) {
 		1.0f, 1.0f
 	};
 
-
-
 	Node root; 
 	
 	Mesh cube[6] = { Mesh(shaderProgram), Mesh(shaderProgram), Mesh(shaderProgram), Mesh(shaderProgram), Mesh(shaderProgram), Mesh(shaderProgram) };
@@ -155,19 +179,24 @@ int main(int argc, char** argv) {
 
 	Camera camera = Camera(glm::perspective(glm::radians(45.0f), width / float(height), 0.1f, 100.0f));
 
-	float angleInc = 0.1;
+	float angleInc = 0.01;
 
 	//glEnable(GL_CULL_FACE);
 	//glCullFace(GL_BACK);
 
+	float deltaTime = 0.0f;
+	float lastFrame = 0.0f;
 
 	while (!engine.windowsWasClosed()) {
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
 		engine.clearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		processUserInput(engine);
+		updateCamera(engine, camera, deltaTime);
 
-		root.rotate(glm::vec3(1.0f, 0.0f, 0.0f), angleInc);
-		root.rotate(glm::vec3(0.0f, 1.0f, 0.0f), angleInc);
-		root.rotate(glm::vec3(0.0f, 0.0f, 1.0f), angleInc);
+		root.rotate(glm::vec3(0.33f, 0.33f, 0.33f), angleInc);
 
 		engine.render(camera, root);
 

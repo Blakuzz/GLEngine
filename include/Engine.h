@@ -19,6 +19,12 @@ public:
 	bool windowsWasClosed();
 	void terminate();
 	~Engine();
+
+	static float lastMouseX;
+	static float lastMouseY;
+	static float yaw;
+	static float pitch;
+	static bool firstMouse;
 private:
 	int width = 0;
 	int height = 0;

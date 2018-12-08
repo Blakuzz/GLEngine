@@ -2,15 +2,54 @@
 
 #include <iostream>
 
+float Engine::lastMouseX = 0;
+float Engine::lastMouseY = 0;
+float Engine::yaw = 0;
+float Engine::pitch = 0;
+bool Engine::firstMouse = true;
+
 Engine::Engine(int width, int height)
 {
 	this->width = width;
 	this->height = height;
+	Engine::lastMouseX = this->width / 2;
+	Engine::lastMouseY = this->height / 2;
+	Engine::firstMouse = true;
 }
 
 // callback that update viewport size, when windows is resized
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
+}
+
+void mouseCallback(GLFWwindow* window, double xPos, double yPos) {
+	
+	if (Engine::firstMouse) {
+		Engine::lastMouseX = xPos;
+		Engine::lastMouseY = yPos;
+		Engine::firstMouse = false;
+	}
+
+	float xOffset = xPos - Engine::lastMouseX;
+	float yOffset = yPos - Engine::lastMouseY;
+	
+	Engine::lastMouseX = xPos;
+	Engine::lastMouseY = yPos;
+
+	float sensitivity = 0.25f;
+	xOffset *= sensitivity;
+	yOffset *= sensitivity;
+
+	Engine::yaw += xOffset;
+
+	Engine::yaw = glm::mod(Engine::yaw, 360.0f);
+
+	Engine::pitch += yOffset;
+
+	if (Engine::pitch > 89.0f)
+		Engine::pitch = 89.0f;
+	if (Engine::pitch < -89.0f)
+		Engine::pitch = -89.0f;
 }
 
 bool Engine::init() {
@@ -38,7 +77,11 @@ bool Engine::init() {
 
 	// size of the rendering window inside the main window, viewport
 	glViewport(0, 0, this->width, this->height);
-	glfwSetFramebufferSizeCallback(this->window, framebuffer_size_callback);
+	glfwSetFramebufferSizeCallback(this->window, framebufferSizeCallback);
+
+	// mouse support
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(this->window, mouseCallback);
 
 	glEnable(GL_DEPTH_TEST);
 
