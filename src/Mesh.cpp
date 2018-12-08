@@ -57,30 +57,6 @@ bool Mesh::load(std::vector<float>& vertices, std::vector<unsigned int>& indices
 	return true;
 }
 
-void Mesh::scale(glm::vec3& scaling) {
-	this->scaling *= scaling;
-}
-
-void Mesh::rotate(glm::vec3& axis, float degrees) {
-	this->rotation = glm::rotate(this->rotation, glm::radians(degrees), axis);
-}
-
-void Mesh::translate(glm::vec3& translation) {
-	this->translation += translation;
-}
-
-void Mesh::setScale(glm::vec3& scaling) {
-	this->scaling = scaling;
-}
-
-void Mesh::setTranslation(glm::vec3& translation) {
-	this->translation = translation;
-}
-
-void Mesh::resetRotation() {
-	this->rotation = glm::mat4(1);
-}
-
 void Mesh::addTexture(unsigned int id, Texture texture) {
 	this->textures.insert({ id, texture });
 }

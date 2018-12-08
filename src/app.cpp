@@ -1,4 +1,4 @@
-#include "Engine.h"
+﻿#include "Engine.h"
 #include "Shader.h"
 #include "Texture.h"
 
@@ -139,8 +139,11 @@ int main(int argc, char** argv) {
 	glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0);
 	glm::vec3 scaleInc = glm::vec3(1.001, 1.001, 1.001);
 	glm::vec3 translation = glm::vec3(0.0, 0.0, 0.0);
-	glm::vec3 translationInc = glm::vec3(0.001, 0.001, 0);
+	glm::vec3 translationInc = glm::vec3(0.001, 0.001, -0.005);
 	int times = 0;
+
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
 
 	while (!engine.windowsWasClosed()) {
 		engine.clearColor(0.2f, 0.3f, 0.3f, 1.0f);

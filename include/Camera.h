@@ -3,7 +3,7 @@
 #include "GlStuff.h"
 #include "ShaderProgram.h"
 
-class Camera
+class Camera: public Node
 {
 public:
 	Camera(glm::mat4& projection);
