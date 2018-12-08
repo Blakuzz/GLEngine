@@ -43,8 +43,9 @@ bool Engine::init() {
 	return true;
 }
 
-void Engine::render(Camera& camera, Mesh& mesh) {
-	mesh.render(camera);
+void Engine::render(Camera& camera, Node& root) {
+	root.updateWorldPosition();
+	root.render(camera.getProjection(), camera.getView());
 }
 
 void Engine::clearColor(float red, float green, float blue, float alpha) {

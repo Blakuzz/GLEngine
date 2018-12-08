@@ -63,19 +63,11 @@ void Mesh::addTexture(unsigned int id, Texture texture) {
 
 std::array<std::string, 8> shaderLabels = { "texture0","texture1", "texture2", "texture3", "texture4", "texture5", "texture6", "texture7" };
 
-void Mesh::render(Camera& camera) {
+void Mesh::render(glm::mat4& cameraProjection, glm::mat4& cameraView) {
 	
 	this->shaderProgram.bind();
 
-	glm::mat4 scale = glm::scale(glm::mat4(1), this->scaling);
-	glm::mat4 translate = glm::translate(glm::mat4(1), this->translation);
-	glm::mat4 transformation = translate * this->rotation * scale;
-
-	// miss view (inverse camera)
-
-	glm::mat4 projection = camera.getProjection();
-
-	this->shaderProgram.setMatrix4("transformation", projection * transformation);
+	this->shaderProgram.setMatrix4("transformation", cameraProjection * cameraView * this->worldPosition);
 
 	for (std::pair<unsigned int, Texture> tex : this->textures)
 	{
@@ -91,6 +83,9 @@ void Mesh::render(Camera& camera) {
 
 	Texture::unbind();
 	ShaderProgram::unbind();
+
+	Node::render(cameraProjection, cameraView);
+
 }
 
 void Mesh::destroy() {

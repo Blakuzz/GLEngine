@@ -3,7 +3,6 @@
 #include "GlStuff.h"
 #include "Texture.h"
 #include "ShaderProgram.h"
-#include "Camera.h"
 #include "Node.h"
 
 #include <vector>
@@ -15,7 +14,7 @@ public:
 	Mesh(ShaderProgram shaderProgram);
 	bool load(std::vector<float>& vertices, std::vector<unsigned int>& indices, std::vector<float>& colors, std::vector<float>& textureCoordinates);
 	void addTexture(unsigned int id, Texture texture);
-	void render(Camera& camera);
+	void render(glm::mat4& cameraProjection, glm::mat4& cameraView);
 	void destroy();
 	~Mesh();
 private:

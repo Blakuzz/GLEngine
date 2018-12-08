@@ -188,7 +188,7 @@ int main(int argc, char** argv) {
 			times++;
 		}
 		else if (times < 4000) {
-			mesh.setTranslation(glm::vec3(0.0f));
+			mesh.setTranslation(glm::vec3(0.0f, 0.0f, -2.5f));
 			times++;
 		}
 
