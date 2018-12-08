@@ -119,87 +119,66 @@ int main(int argc, char** argv) {
 		1.0f, 1.0f
 	};
 
-	Mesh mesh = Mesh(shaderProgram);
-	if (!mesh.load(vertices, indices, colors, textureCoordinates)) {
-		std::cerr << "Error during mesh load" << std::endl;
-		return 1;
-	}
+
+
+	Node root; 
+	
+	Mesh cube[6] = { Mesh(shaderProgram), Mesh(shaderProgram), Mesh(shaderProgram), Mesh(shaderProgram), Mesh(shaderProgram), Mesh(shaderProgram) };
+
+	cube[0].translate(glm::vec3(0.0f, 0.0f, 0.5f));
+	cube[1].translate(glm::vec3(0.5f, 0.0f, 0.0f));
+	cube[1].rotate(glm::vec3(0.0f, 1.0f, 0.0f), 90);
+	cube[2].translate(glm::vec3(0.0f, 0.0f, -0.5f));
+	cube[2].rotate(glm::vec3(0.0f, 1.0f, 0.0f), 180);
+	cube[3].translate(glm::vec3(-0.5f, 0.0f, 0.0f));
+	cube[3].rotate(glm::vec3(0.0f, 1.0f, 0.0f), 270);
+	cube[4].translate(glm::vec3(0.0f, 0.5f, 0.0f));
+	cube[4].rotate(glm::vec3(1.0f, 0.0f, 0.0f), 90);
+	cube[5].translate(glm::vec3(0.0f, -0.5f, 0.0f));
+	cube[5].rotate(glm::vec3(1.0f, 0.0f, 0.0f), -90);
 
 	Texture texture0 = loadTexture("..\\engine\\resources\\textures\\wall.jpg", false);
 	Texture texture1 = loadTexture("..\\engine\\resources\\textures\\awesomeface.png", true);
 
-	mesh.addTexture(0, texture0);
-	mesh.addTexture(1, texture1);
+	for (int i = 0; i < 6; i++) {
+		if (!cube[i].load(vertices, indices, colors, textureCoordinates)) {
+			std::cerr << "Error during mesh load" << std::endl;
+			return 1;
+		}
+		cube[i].addTexture(0, texture0);
+		cube[i].addTexture(1, texture1);
+	
+		root.addChild(&cube[i]);
+	}
+
+	root.translate(glm::vec3(0.0f, 0.0f, -5.0f));
 
 	Camera camera = Camera(glm::perspective(glm::radians(45.0f), width / float(height), 0.1f, 100.0f));
 
-	mesh.translate(glm::vec3(0.0f, 0.0f, -2.5f));
-	float angle = 0;
 	float angleInc = 0.1;
-	glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0);
-	glm::vec3 scaleInc = glm::vec3(1.001, 1.001, 1.001);
-	glm::vec3 translation = glm::vec3(0.0, 0.0, 0.0);
-	glm::vec3 translationInc = glm::vec3(0.001, 0.001, -0.005);
-	int times = 0;
 
 	//glEnable(GL_CULL_FACE);
 	//glCullFace(GL_BACK);
+
 
 	while (!engine.windowsWasClosed()) {
 		engine.clearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		processUserInput(engine);
 
-		if (times < 3) {
-			if (angle < 0 || angle > 90) {
-				angleInc = -angleInc;
-				times++;
-			}
-			angle += angleInc;
-			mesh.rotate(glm::vec3(0.0f, 1.0f, 0.0f), angleInc);
-		}
+		root.rotate(glm::vec3(1.0f, 0.0f, 0.0f), angleInc);
+		root.rotate(glm::vec3(0.0f, 1.0f, 0.0f), angleInc);
+		root.rotate(glm::vec3(0.0f, 0.0f, 1.0f), angleInc);
 
-		else if (times == 3) {
-			if (scale.x > 1.5) {
-				times++;
-			}
-			scale = scale * scaleInc;
-			mesh.scale(scaleInc);
-		}
-
-		else if (times < 7) {
-			if (translation.x < 0 || translation.x > 0.5) {
-				translationInc.x = -translationInc.x;
-				translationInc.y = -translationInc.y;
-				translationInc.z = -translationInc.z;
-				times++;
-			}
-			translation = translation + translationInc;
-			mesh.translate(translationInc);
-		}
-		else if (times < 1000) {
-			times++;
-		}
-		else if (times < 2000) {
-			mesh.resetRotation();
-			times++;
-		}
-		else if (times < 3000) {
-			mesh.setScale(glm::vec3(1.0f));
-			times++;
-		}
-		else if (times < 4000) {
-			mesh.setTranslation(glm::vec3(0.0f, 0.0f, -2.5f));
-			times++;
-		}
-
-		engine.render(camera, mesh);
+		engine.render(camera, root);
 
 		engine.swapBuffer();
 	}
 
 	texture0.destroy();
 	texture1.destroy();
-	mesh.destroy();
+	for (int i = 0; i < 6; i++) {
+		cube[i].destroy();
+	}
 	shaderProgram.destroy();
 	engine.terminate();
 
