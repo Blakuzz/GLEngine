@@ -36,10 +36,22 @@ void updateCamera(Engine& engine, Camera& camera, float elapsedTime) {
 	float yaw = Engine::yaw;
 	float pitch = Engine::pitch;
 
-	camera.setDirection(glm::normalize(glm::vec3(
+	/*camera.setDirection(glm::normalize(glm::vec3(
 		cos(glm::radians(pitch)) * sin(glm::radians(yaw)),
 		- sin(glm::radians(pitch)),
 		- cos(glm::radians(pitch)) * cos(glm::radians(yaw))
+		)));*/
+
+	/*camera.setDirection(glm::normalize(glm::vec3(
+		cos(glm::radians(yaw)) * sin(glm::radians(pitch)),
+		sin(glm::radians(pitch)) * sin(glm::radians(yaw)),
+		-cos(glm::radians(pitch))
+		)));*/
+
+	camera.setDirection(glm::normalize(glm::vec3(
+		sin(glm::radians(yaw)),
+		-sin(glm::radians(pitch)),
+		-cos(glm::radians(yaw))
 		)));
 
 }
@@ -123,16 +135,86 @@ int main(int argc, char** argv) {
 	fragmentShader.destroy();
 
 	std::vector<float> vertices = {
-		-0.5f,  -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f, 
-		-0.5f, 0.5f, 0.0f,
-		0.5f, 0.5f, 0.0f
+		-0.5f,  -0.5f, 0.5f, // front
+		0.5f, -0.5f, 0.5f, 
+		-0.5f, 0.5f, 0.5f,
+		0.5f, 0.5f, 0.5f,
+		
+		-0.5f,  -0.5f, -0.5f, // back
+		0.5f, -0.5f, -0.5f,
+		-0.5f, 0.5f, -0.5f,
+		0.5f, 0.5f, -0.5f,
+		
+		-0.5f,  -0.5f, -0.5f, // left
+		-0.5f, -0.5f, 0.5f,
+		-0.5f, 0.5f, -0.5f,
+		-0.5f, 0.5f, 0.5f,
+		
+		0.5f,  -0.5f, 0.5f, // right
+		0.5f, -0.5f, -0.5f,
+		0.5f, 0.5f, 0.5f,
+		0.5f, 0.5f, -0.5f,
+
+		-0.5f,  -0.5f, -0.5f, // bottom
+		0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f, 0.5f,
+		0.5f, -0.5f, 0.5f,
+
+		0.5f,  0.5f, -0.5f, // top
+		-0.5f, 0.5f, -0.5f,
+		0.5f, 0.5f, 0.5f,
+		-0.5f, 0.5f, 0.5f,
 	};
+
+	std::cout << vertices.size() << std::endl;
+	std::cout << vertices.size() << std::endl;
+
 	std::vector<unsigned int> indices = {
 		0, 1, 2,
-		2, 1, 3
+		2, 1, 3,
+		
+		5, 4, 7,
+		7, 4, 6,
+		
+		8, 9, 10,
+		10, 9, 11,
+
+		12, 13, 14,
+		14, 13, 15,
+
+		16, 17, 18,
+		18, 17, 19,
+
+		20, 21, 22,
+		22, 21, 23,
+
 	};
 	std::vector<float> colors = {
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 1.0f,
+
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 1.0f,
+		
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 1.0f,
+
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 1.0f,
+
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 1.0f,
+
 		1.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 0.0f,
 		0.0f, 0.0f, 1.0f,
@@ -142,38 +224,53 @@ int main(int argc, char** argv) {
 		0.0f, 0.0f,
 		1.0f, 0.0f,
 		0.0f, 1.0f,
-		1.0f, 1.0f
+		1.0f, 1.0f,
+
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		0.0f, 1.0f,
+		1.0f, 1.0f,
+
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		0.0f, 1.0f,
+		1.0f, 1.0f,
+
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		0.0f, 1.0f,
+		1.0f, 1.0f,
+
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		0.0f, 1.0f,
+		1.0f, 1.0f,
+
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		0.0f, 1.0f,
+		1.0f, 1.0f,
 	};
 
-	Node root; 
-	
-	Mesh cube[6] = { Mesh(shaderProgram), Mesh(shaderProgram), Mesh(shaderProgram), Mesh(shaderProgram), Mesh(shaderProgram), Mesh(shaderProgram) };
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
-	cube[0].translate(glm::vec3(0.0f, 0.0f, 0.5f));
-	cube[1].translate(glm::vec3(0.5f, 0.0f, 0.0f));
-	cube[1].rotate(glm::vec3(0.0f, 1.0f, 0.0f), 90);
-	cube[2].translate(glm::vec3(0.0f, 0.0f, -0.5f));
-	cube[2].rotate(glm::vec3(0.0f, 1.0f, 0.0f), 180);
-	cube[3].translate(glm::vec3(-0.5f, 0.0f, 0.0f));
-	cube[3].rotate(glm::vec3(0.0f, 1.0f, 0.0f), 270);
-	cube[4].translate(glm::vec3(0.0f, 0.5f, 0.0f));
-	cube[4].rotate(glm::vec3(1.0f, 0.0f, 0.0f), 90);
-	cube[5].translate(glm::vec3(0.0f, -0.5f, 0.0f));
-	cube[5].rotate(glm::vec3(1.0f, 0.0f, 0.0f), -90);
+	Node root; 
 
 	Texture texture0 = loadTexture("..\\engine\\resources\\textures\\wall.jpg", false);
 	Texture texture1 = loadTexture("..\\engine\\resources\\textures\\awesomeface.png", true);
 
-	for (int i = 0; i < 6; i++) {
-		if (!cube[i].load(vertices, indices, colors, textureCoordinates)) {
+	Mesh cube = Mesh(shaderProgram);
+
+		if (!cube.load(vertices, indices, colors, textureCoordinates)) {
 			std::cerr << "Error during mesh load" << std::endl;
 			return 1;
 		}
-		cube[i].addTexture(0, texture0);
-		cube[i].addTexture(1, texture1);
+		cube.addTexture(0, texture0);
+		cube.addTexture(1, texture1);
 	
-		root.addChild(&cube[i]);
-	}
+		root.addChild(&cube);
+	
 
 	root.translate(glm::vec3(0.0f, 0.0f, -5.0f));
 
@@ -181,8 +278,6 @@ int main(int argc, char** argv) {
 
 	float angleInc = 0.01;
 
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
 
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
@@ -205,9 +300,7 @@ int main(int argc, char** argv) {
 
 	texture0.destroy();
 	texture1.destroy();
-	for (int i = 0; i < 6; i++) {
-		cube[i].destroy();
-	}
+	cube.destroy();
 	shaderProgram.destroy();
 	engine.terminate();
 

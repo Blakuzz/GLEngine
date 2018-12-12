@@ -67,7 +67,7 @@ void Mesh::render(glm::mat4& cameraProjection, glm::mat4& cameraView) {
 	
 	this->shaderProgram.bind();
 
-	this->shaderProgram.setMatrix4("transformation", cameraProjection * cameraView * this->worldPosition);
+	this->shaderProgram.setMatrix4("modelViewProjection", cameraProjection * cameraView * this->worldPosition);
 
 	for (std::pair<unsigned int, Texture> tex : this->textures)
 	{
