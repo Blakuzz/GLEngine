@@ -1,6 +1,7 @@
 ﻿#include "Engine.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Light.h"
 
 #include <string>
 #include <fstream>
@@ -252,32 +253,42 @@ int main(int argc, char** argv) {
 		1.0f, 1.0f,
 	};
 
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+	/*glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);*/
 
 	Node root; 
 
 	Texture texture0 = loadTexture("..\\engine\\resources\\textures\\wall.jpg", false);
-	Texture texture1 = loadTexture("..\\engine\\resources\\textures\\awesomeface.png", true);
 
 	Mesh cube = Mesh(shaderProgram);
+	Mesh cubeLamp = Mesh(shaderProgram);
 
 		if (!cube.load(vertices, indices, colors, textureCoordinates)) {
 			std::cerr << "Error during mesh load" << std::endl;
 			return 1;
 		}
 		cube.addTexture(0, texture0);
-		cube.addTexture(1, texture1);
+
+		if (!cubeLamp.load(vertices, indices, colors, textureCoordinates)) {
+			std::cerr << "Error during mesh load" << std::endl;
+			return 1;
+		}
+		cubeLamp.addTexture(0, texture0);
 	
 		root.addChild(&cube);
+		root.addChild(&cubeLamp);
 	
 
-	root.translate(glm::vec3(0.0f, 0.0f, -5.0f));
+	cube.translate(glm::vec3(0.0f, 0.0f, -5.0f));
+	cubeLamp.translate(glm::vec3(2.5f, 0.0f, -5.0f));
+	cubeLamp.scale(glm::vec3(0.5f));
 
 	Camera camera = Camera(glm::perspective(glm::radians(45.0f), width / float(height), 0.1f, 100.0f));
 
 	float angleInc = 0.01;
 
+	Light light = Light(shaderProgram, glm::vec3(0.5f,1.0f,1.0f));
+	root.addChild(&light);
 
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
@@ -291,7 +302,7 @@ int main(int argc, char** argv) {
 		processUserInput(engine);
 		updateCamera(engine, camera, deltaTime);
 
-		root.rotate(glm::vec3(0.33f, 0.33f, 0.33f), angleInc);
+		cube.rotate(glm::vec3(0.33f, 0.33f, 0.33f), angleInc);
 
 		engine.render(camera, root);
 
@@ -299,8 +310,8 @@ int main(int argc, char** argv) {
 	}
 
 	texture0.destroy();
-	texture1.destroy();
 	cube.destroy();
+	cubeLamp.destroy();
 	shaderProgram.destroy();
 	engine.terminate();
 

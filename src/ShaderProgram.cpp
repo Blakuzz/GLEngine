@@ -46,6 +46,11 @@ void ShaderProgram::setInteger(const std::string &name, int value) {
 	glUniform1i(glGetUniformLocation(this->glId, name.c_str()), value);
 }
 
+
+void ShaderProgram::setVec3(const std::string &name, glm::vec3& vector) {
+	glUniform3fv(glGetUniformLocation(this->glId, name.c_str()), 1, &vector[0]);
+}
+
 void ShaderProgram::destroy() {
 	glDeleteProgram(this->glId);
 }
